@@ -5,11 +5,14 @@ from django.views.decorators.http import require_GET, require_POST, require_http
 from . import codex_ai, run_queue
 from .forms import COUNTRY_CHOICES
 from .models import CodexRun
+from .apple_ads import discovery
+from .research_pipeline import app_id_from_input
 
 
 def payload(row):
     return {"id": row.pk, "mode": row.mode, "brief": row.brief, "seed": row.seed,
-            "country": row.country, "status": row.status, "progress": row.progress_message,
+            "promoted_app_id": row.promoted_app_id, "competitor_app_id": row.competitor_app_id,
+            "discovery": row.discovery_data, "country": row.country, "status": row.status, "progress": row.progress_message,
             "error": row.error_message, "report": row.report, "evidence": row.evidence,
             "created_at": row.created_at.isoformat()}
 
@@ -21,7 +24,7 @@ def workspace(request):
 
 @require_GET
 def status(request):
-    return JsonResponse(codex_ai.connection_status())
+    return JsonResponse({**codex_ai.connection_status(), "apple": discovery.connection_status()})
 
 
 @require_http_methods(["GET", "POST"])
@@ -36,7 +39,13 @@ def runs(request):
         return JsonResponse({"error": "Choose a valid mode and country; enter a brief of 5–12,000 characters and a seed of at most 200 characters."}, status=400)
     if not codex_ai.connection_status()["connected"]:
         return JsonResponse({"error": "Sign into Codex with ChatGPT in Terminal first: codex login"}, status=409)
-    row = CodexRun.objects.create(mode=mode, brief=brief, seed=seed, country=country)
+    try:
+        promoted = app_id_from_input(request.POST.get("promoted_app_id", ""))
+        competitor = app_id_from_input(request.POST.get("competitor_app_id", ""))
+    except ValueError as exc:
+        return JsonResponse({"error": str(exc)}, status=400)
+    row = CodexRun.objects.create(mode=mode, brief=brief, seed=seed, country=country,
+                                 promoted_app_id=promoted, competitor_app_id=competitor)
     run_queue.kick()
     return JsonResponse(payload(row), status=202)
 

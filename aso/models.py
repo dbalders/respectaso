@@ -752,6 +752,9 @@ class AppleImpressionShare(models.Model):
 
 class CodexRun(models.Model):
     """Independent Codex analysis, persisted in the shared research queue."""
+    promoted_app_id = models.CharField(max_length=20, blank=True)
+    competitor_app_id = models.CharField(max_length=20, blank=True)
+    discovery_data = models.JSONField(default=dict)
     mode = models.CharField(max_length=20)
     brief = models.TextField()
     seed = models.CharField(max_length=200, blank=True)

@@ -11,13 +11,16 @@
 <h1>Research with Codex</h1>
 <p>Turn App Store research into keyword opportunities and stronger metadata.</p>
 <div id="cx-connection" class="cx-status" role="status">Checking Codex connection…</div>
-<p><small>Uses your signed-in Codex subscription. Your brief and the research shown here are sent to Codex. Subscription usage limits apply.</small></p>
+<p id="cx-apple" role="status"></p><a href="{% url 'aso:settings_popularity' %}" class="text-purple-400">Apple Ads connection settings</a>
+<p><small>Uses your signed-in Codex subscription. Your brief and the research shown here are sent to Codex. Each analysis uses 2 Codex requests, with up to 2 additional metadata corrections. Subscription usage limits apply.</small></p>
 <div class="cx-grid">
 <section class="cx-panel">
 <form id="cx-form">{% csrf_token %}
 <label for="cx-mode">What would you like to do?</label><select id="cx-mode" name="mode"><option value="research">Discover keywords</option><option value="competitor">Analyze competitors</option><option value="metadata">Review metadata</option></select>
 <label for="cx-brief">About your app and your question</label><textarea id="cx-brief" name="brief" minlength="5" maxlength="12000" required placeholder="Describe your app, its audience and features. For a metadata review, include your current title, subtitle and keyword field."></textarea>
-<label for="cx-seed">Seed keyword (optional)</label><input id="cx-seed" name="seed" maxlength="200" placeholder="golf swing"><small>Fetches current competitors and scores. Recent research for this country is also included.</small>
+<label for="cx-seed">Seed keyword (optional)</label><input id="cx-seed" name="seed" maxlength="200" placeholder="golf swing"><small>Fetches current competitors and scores. Up to 10 candidates are scored before Codex revises its recommendations.</small>
+<label for="cx-app">Your app’s App Store URL or ID (optional)</label><input id="cx-app" name="promoted_app_id" maxlength="300" placeholder="https://apps.apple.com/…/id123456789"><small>Scopes Apple keyword suggestions to your app. Your Apple Ads account must have access.</small>
+<label for="cx-competitor">Competitor App Store URL or ID (optional)</label><input id="cx-competitor" name="competitor_app_id" maxlength="300" placeholder="https://apps.apple.com/…/id123456789"><small>Fetches the listing for competitor analysis. This is separate from your promoted app.</small>
 <label for="cx-country">App Store country</label><select id="cx-country" name="country">{% for value,label in countries %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
 <button id="cx-submit" type="submit" disabled>Run with Codex</button>
 <p id="cx-error" class="cx-error" role="alert"></p>
@@ -25,7 +28,7 @@
 <h3>Recent analyses</h3><div id="cx-history" class="cx-history"></div>
 </section>
 <section class="cx-panel" aria-live="polite">
-<h2 id="cx-heading">Your analysis</h2><p id="cx-progress">Choose a workflow and describe your app to begin.</p>
+<h2 id="cx-heading">Your analysis</h2><p id="cx-progress">Discover candidates → score keywords → refine recommendations → validate metadata.</p>
 <div id="cx-result"></div>
 <button id="cx-copy" class="secondary" hidden>Copy report</button>
 <button id="cx-research" class="secondary" hidden>Research suggested keywords</button>

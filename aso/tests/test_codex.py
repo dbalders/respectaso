@@ -55,10 +55,10 @@ class CodexWorkflowTest(TestCase):
 
     def test_report_persists_and_failures_are_visible(self):
         row=CodexRun.objects.create(mode='metadata',brief='Golf video app',status='running')
-        with mock.patch.object(codex_ai,'ask_codex',return_value={'analysis':'Review'}):
+        with mock.patch('aso.research_pipeline.run',return_value=({'analysis':'Review'},[],{})):
             codex_ai.execute(row.pk)
         row.refresh_from_db();self.assertEqual(row.status,'completed');self.assertEqual(row.report['analysis'],'Review')
-        with mock.patch.object(codex_ai,'ask_codex',side_effect=RuntimeError('Usage limit reached')):
+        with mock.patch('aso.research_pipeline.run',side_effect=RuntimeError('Usage limit reached')):
             codex_ai.execute(row.pk)
         row.refresh_from_db();self.assertEqual(row.status,'failed');self.assertEqual(row.error_message,'Usage limit reached')
 

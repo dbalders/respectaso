@@ -2,7 +2,7 @@
 
 Based on upstream 2.25.0. All public-source research and queue features are available without a RespectASO license, with an operational cap of 1,000 keywords per batch and Apple's request throttling retained.
 
-The **Codex AI** tab adds independently implemented keyword discovery, competitor analysis from research results, and metadata review. It uses the installed `codex exec` CLI and your existing **ChatGPT login**, not an API key. This is not upstream's proprietary Pro implementation.
+The **Codex AI** tab adds Apple-backed candidate discovery, competitor URL analysis, live keyword scoring, evidence-based Codex refinement, and metadata validation. It uses the installed `codex exec` CLI and your existing **ChatGPT login**, not an API key. This is not upstream's proprietary Pro implementation.
 
 ## Run locally
 
@@ -27,16 +27,28 @@ Open http://127.0.0.1:9090/codex/. Set `RESPECTASO_CODEX_BIN` if Codex is not on
 - Requires `codex login status` to report ChatGPT authentication. API-key authentication is rejected; API-key environment variables are not forwarded.
 - Calls the official CLI using saved native authentication. No credentials are read, copied into the app, or included in this repository.
 - Uses an ephemeral request in a temporary directory, ignores personal CLI configuration, disables shell tools and web search, and requests structured output in a read-only sandbox.
-- Sends the brief, selected country, optional freshly researched seed keyword, and up to 15 recent distinct keywords for that country to Codex. Research evidence is saved with each report and visible in the UI.
+- Sends the brief, selected country, optional competitor listing, Apple suggestion candidates when connected, and up to 10 scored keywords to Codex. It selects candidates, scores them through the App Store pipeline, then revises recommendations from those results. Each report preserves evidence and sources; unrelated search history is not sent.
 - Uses subscription allowances. Failed or interrupted runs are saved and can be retried. Queued runs resume after restart; an in-flight AI request is marked failed after restart to avoid an automatic duplicate charge to usage.
-- Suggestions are explicitly unscored. **Research suggested keywords** queues them through the normal App Store scoring pipeline. Metadata exceeding App Store character limits is flagged, never silently truncated.
+- Runs use 2 Codex requests, plus up to 2 metadata correction requests if needed. Metadata lengths, whitespace, empty fields and duplicated words are checked. Remaining issues are shown, never silently truncated. Any final unscored suggestions are explicitly identified. The report is not a prediction of organic rankings.
 
 The original license and upstream attribution remain below. Upstream binary update prompts are disabled because installing their DMG would replace this fork's behavior. Update this checkout deliberately and back up its data before migrations. Upstream proprietary AI/MCP/Top Terms interfaces are not included.
+
+## Apple discovery setup and boundaries
+
+Connect and verify Apple Ads through **Settings → Popularity**. This implementation reuses the existing locally stored credentials and read-only query transport; no campaigns, bids or budgets are changed. On the Codex page, enter your own promoted app's App Store URL/ID to scope keyword suggestions, and a separate competitor URL/ID for listing analysis. IDs are parsed locally; arbitrary URLs are never fetched.
+
+- `/suggestions/keywords/query`: app-scoped candidates with a country filter and optional seed terms.
+- `/suggestions/phrases/query`: app discovery or seed phrase matching. The documented phrase query has no country filter; phrase scores remain explicitly unscoped.
+- Both are capped at 50 returned candidates per query. Partial results and unavailable endpoints are surfaced; unsupported response formats are not interpreted as zero popularity.
+- Suggestion popularity is preserved as Apple's relative value, separately from weekly Apple popularity and estimated keyword difficulty/opportunity. It is never converted into absolute search volume.
+- Unconfigured Apple Ads falls back visibly to Codex candidate generation and real App Store scoring. This is not a live test of the Apple Ads endpoints. See **Research used in this analysis** for the exact retained query/response and scored evidence.
+
+Official contracts: [keyword suggestions](https://developer.apple.com/documentation/apple-ads-platform-api/query-keyword-suggestions), [phrase suggestions](https://developer.apple.com/documentation/apple-ads-platform-api/query-phrase-suggestions).
 
 ## Validation
 
 ```sh
-.venv/bin/python manage.py test aso.tests.test_codex aso.tests.test_search_jobs aso.tests.test_run_queue_order
+.venv/bin/python manage.py test aso.tests.test_discovery_pipeline aso.tests.test_codex aso.tests.test_search_jobs aso.tests.test_run_queue_order
 ```
 
 ---
