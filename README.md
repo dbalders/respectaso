@@ -1,3 +1,48 @@
+# RespectASO + Codex (independent fork)
+
+Based on upstream 2.25.0. All public-source research and queue features are available without a RespectASO license, with an operational cap of 1,000 keywords per batch and Apple's request throttling retained.
+
+The **Codex AI** tab adds independently implemented keyword discovery, competitor analysis from research results, and metadata review. It uses the installed `codex exec` CLI and your existing **ChatGPT login**, not an API key. This is not upstream's proprietary Pro implementation.
+
+## Run locally
+
+Requires Python 3.12 and a current Codex CLI supporting `--ignore-user-config`, `--ephemeral` and `--output-schema`.
+
+```sh
+python3.12 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+codex login
+export DATA_DIR="$PWD/data"
+mkdir -p "$DATA_DIR"
+# Set a persistent random SECRET_KEY in data/.env and DEBUG=False.
+.venv/bin/python manage.py migrate
+.venv/bin/python manage.py collectstatic --noinput
+.venv/bin/gunicorn core.wsgi:application --bind 127.0.0.1:9090 --workers 1 --threads 4 --timeout 300
+```
+
+Open http://127.0.0.1:9090/codex/. Set `RESPECTASO_CODEX_BIN` if Codex is not on PATH or in the standard macOS app location. Keep a single worker: the shared research queue coordinates within that process. This is a local single-user application; do not expose its port publicly.
+
+## How the Codex connection works
+
+- Requires `codex login status` to report ChatGPT authentication. API-key authentication is rejected; API-key environment variables are not forwarded.
+- Calls the official CLI using saved native authentication. No credentials are read, copied into the app, or included in this repository.
+- Uses an ephemeral request in a temporary directory, ignores personal CLI configuration, disables shell tools and web search, and requests structured output in a read-only sandbox.
+- Sends the brief, selected country, optional freshly researched seed keyword, and up to 15 recent distinct keywords for that country to Codex. Research evidence is saved with each report and visible in the UI.
+- Uses subscription allowances. Failed or interrupted runs are saved and can be retried. Queued runs resume after restart; an in-flight AI request is marked failed after restart to avoid an automatic duplicate charge to usage.
+- Suggestions are explicitly unscored. **Research suggested keywords** queues them through the normal App Store scoring pipeline. Metadata exceeding App Store character limits is flagged, never silently truncated.
+
+The original license and upstream attribution remain below. Upstream binary update prompts are disabled because installing their DMG would replace this fork's behavior. Update this checkout deliberately and back up its data before migrations. Upstream proprietary AI/MCP/Top Terms interfaces are not included.
+
+## Validation
+
+```sh
+.venv/bin/python manage.py test aso.tests.test_codex aso.tests.test_search_jobs aso.tests.test_run_queue_order
+```
+
+---
+
+## Upstream documentation (describes the upstream product)
+
 # RespectASO
 
 <p align="center">

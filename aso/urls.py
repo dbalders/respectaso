@@ -1,10 +1,16 @@
 from django.urls import path
 
-from . import settings_views, views
+from . import settings_views, views, codex_views
 
 app_name = "aso"
 
 urlpatterns = [
+    path("codex/", codex_views.workspace, name="codex_workspace"),
+    path("codex/status/", codex_views.status, name="codex_status"),
+    path("codex/runs/", codex_views.runs, name="codex_runs"),
+    path("codex/runs/<int:pk>/", codex_views.detail, name="codex_detail"),
+    path("codex/runs/<int:pk>/retry/", codex_views.retry, name="codex_retry"),
+
     path("", views.dashboard_view, name="dashboard"),
     path("methodology/", views.methodology_view, name="methodology"),
     path("whats-new/", views.whats_new_view, name="whats_new"),
@@ -59,8 +65,8 @@ urlpatterns = [
     path("version-check/", views.version_check_view, name="version_check"),
     path("download/dmg/", views.download_dmg_view, name="download_dmg"),
     # Pro promotional pages (shown in free version nav)
-    path("pro/ai-researcher/", views.pro_promo_researcher_view, name="pro_promo_researcher"),
-    path("pro/ai-competitor/", views.pro_promo_competitor_view, name="pro_promo_competitor"),
-    path("pro/simulator/", views.pro_promo_simulator_view, name="pro_promo_simulator"),
+    path("pro/ai-researcher/", codex_views.workspace, name="pro_promo_researcher"),
+    path("pro/ai-competitor/", codex_views.workspace, name="pro_promo_competitor"),
+    path("pro/simulator/", codex_views.workspace, name="pro_promo_simulator"),
     path("pro/top-terms/", views.pro_promo_top_terms_view, name="pro_promo_top_terms"),
 ]

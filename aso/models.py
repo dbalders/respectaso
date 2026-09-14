@@ -748,3 +748,23 @@ class AppleImpressionShare(models.Model):
             f"{self.search_term} ({self.country}, {self.week}) - "
             f"{self.low_share:.0%}-{self.high_share:.0%}"
         )
+
+
+class CodexRun(models.Model):
+    """Independent Codex analysis, persisted in the shared research queue."""
+    mode = models.CharField(max_length=20)
+    brief = models.TextField()
+    seed = models.CharField(max_length=200, blank=True)
+    country = models.CharField(max_length=2, default="us")
+    status = models.CharField(max_length=12, default="queued")
+    queue_rank = models.IntegerField(null=True, blank=True)
+    progress_message = models.CharField(max_length=200, blank=True)
+    error_message = models.TextField(blank=True)
+    report = models.JSONField(default=dict)
+    evidence = models.JSONField(default=list)
+    created_at = models.DateTimeField(auto_now_add=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    finished_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]

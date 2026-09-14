@@ -14,7 +14,7 @@ class AsoConfig(AppConfig):
         # the estimator upgrade thread would log "no such table" on every run
         # and the scheduler thread would hit the DB mid-suite. Tests that
         # cover the hooks call them directly.
-        skip_commands = {"migrate", "makemigrations", "collectstatic", "createsuperuser", "shell", "test"}
+        skip_commands = {"migrate", "makemigrations", "collectstatic", "createsuperuser", "shell", "test", "check"}
         if any(cmd in sys.argv for cmd in skip_commands):
             return
 

@@ -80,11 +80,9 @@ class ParseAndLimitTest(JobTestBase):
         self.assertEqual(search_jobs.parse_keywords(raw),
                          ["Meditation App", "fitness tracker", "sleep sounds"])
 
-    def test_limit_is_1000_with_pro_and_3_without(self):
-        self.assertEqual(search_jobs.keyword_limit(), 1000)
-        with override_settings(DEBUG_SKIP_LICENSE=False), \
-             mock.patch("aso.pro_access.django_apps.is_installed", return_value=False):
-            self.assertEqual(search_jobs.keyword_limit(), 3)
+    def test_fork_limit_is_1000_without_a_license(self):
+        with override_settings(DEBUG_SKIP_LICENSE=False):
+            self.assertEqual(search_jobs.keyword_limit(), 1000)
 
     def test_limit_context_names_where_to_get_pro(self):
         self.assertIsNone(search_jobs.limit_context()["upgrade_url"])

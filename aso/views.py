@@ -1633,7 +1633,7 @@ def version_check_view(request):
     minutes (see aso/update_check.py); pages in between get the cached
     answer, so an active session can never exhaust GitHub's rate limit.
     """
-    return JsonResponse(update_check.check_for_update())
+    return JsonResponse({"update_available": False, "current": settings.VERSION, "is_native": False, "fork_url": "https://github.com/dbalders/respectaso"})
 
 
 def auto_refresh_status_view(request):

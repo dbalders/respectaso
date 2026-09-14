@@ -10,8 +10,7 @@ job needs is in the row, it continues after the app was quit, after a crash
 and after a container restart - ``requeue_interrupted`` puts it back at the
 front of the queue on the next start.
 
-Limits: 1,000 keywords per search and the queue with a Pro license, 3 per
-search and one search at a time without (``keyword_limit``). The limit is
+Limits: 1,000 keywords per search and the queue with a Pro license, available to everyone in this fork (``keyword_limit``). The limit is
 an error with a number, never a silent cut.
 
 Ships in the free-tier ``aso`` app: no ``aso_pro`` or ``licensing`` imports

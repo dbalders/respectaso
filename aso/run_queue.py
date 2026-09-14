@@ -87,7 +87,7 @@ def _ensure_features():
     if _registrars_loaded:
         return
     _registrars_loaded = True
-    from . import search_jobs  # noqa: F401  (keyword search, both editions)
+    from . import search_jobs, codex_ai  # noqa: F401 (public research and Codex)
     if django_apps.is_installed("aso_pro"):
         from aso_pro import views  # noqa: F401  (the three AI features)
 

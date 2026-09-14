@@ -20,7 +20,7 @@
     {% include "aso/partials/banner.html" %}
 
     <!-- Docker → Native migration banner (only for Docker users) -->
-    {% if not IS_NATIVE_APP %}
+    {% if not IS_NATIVE_APP and not LOCAL_FORK %}
     <div id="docker-migration-banner" class="bg-amber-900/30 border-b border-amber-500/30 px-4 py-2.5">
         <div class="max-w-[1600px] mx-auto flex items-center justify-between gap-3">
             <p class="text-xs text-amber-200/90">
@@ -76,23 +76,7 @@
                        class="text-sm {% if request.resolver_match.url_name == 'opportunity' %}text-purple-400 font-medium{% else %}text-slate-300 hover:text-white{% endif %} transition-colors">
                         Opportunity
                     </a>
-                    <a href="{% url 'aso:pro_promo_top_terms' %}"
-                       class="text-sm {% if request.resolver_match.url_name == 'pro_promo_top_terms' %}text-sky-400 font-medium{% else %}text-sky-300/70 hover:text-sky-300{% endif %} transition-colors">
-                        Top Terms
-                    </a>
-                    <span class="border-l border-white/10 h-4"></span>
-                    <a href="{% url 'aso:pro_promo_researcher' %}"
-                       class="text-sm {% if request.resolver_match.url_name == 'pro_promo_researcher' %}text-emerald-400 font-medium{% else %}text-emerald-300/70 hover:text-emerald-300{% endif %} transition-colors">
-                        AI Researcher
-                    </a>
-                    <a href="{% url 'aso:pro_promo_competitor' %}"
-                       class="text-sm {% if request.resolver_match.url_name == 'pro_promo_competitor' %}text-emerald-400 font-medium{% else %}text-emerald-300/70 hover:text-emerald-300{% endif %} transition-colors">
-                        AI Competitor
-                    </a>
-                    <a href="{% url 'aso:pro_promo_simulator' %}"
-                       class="text-sm {% if request.resolver_match.url_name == 'pro_promo_simulator' %}text-emerald-400 font-medium{% else %}text-emerald-300/70 hover:text-emerald-300{% endif %} transition-colors">
-                        ASO Simulator
-                    </a>
+                    <a href="{% url 'aso:codex_workspace' %}" class="text-sm text-emerald-300 hover:text-white">Codex AI</a>
                     <span class="border-l border-white/10 h-4"></span>
                     <a href="{% url 'aso:methodology' %}"
                        class="text-sm {% if request.resolver_match.url_name == 'methodology' %}text-purple-400 font-medium{% else %}text-slate-300 hover:text-white{% endif %} transition-colors">
@@ -121,7 +105,7 @@
 
     <!-- Main Content -->
     <main class="flex-1 max-w-[1600px] mx-auto w-full px-4 sm:px-6 lg:px-8 py-5">
-        <!-- Update Banner (populated by JS, shown on all pages) -->
+        <!-- Updates are managed from the fork. -->
         <div id="update-banner" class="hidden animate-fade-in mb-5">
             <div class="bg-purple-900/30 border border-purple-500/30 rounded-xl px-4 py-3">
                 <div class="flex items-center justify-between gap-3">
@@ -215,7 +199,7 @@
                         </a>
                         <a href="{% url 'aso:whats_new' %}" title="What's new in this version"
                            class="ml-2 rounded-full border border-white/5 bg-slate-800/80 px-2.5 py-1 text-[11px] text-slate-500 hover:text-slate-300 hover:border-white/15 transition-colors">v{{ VERSION }} · What's new</a>
-                        <a href="https://github.com/respectlytics/respectaso"
+                        <a href="https://github.com/dbalders/respectaso"
                            target="_blank" rel="noopener"
                            aria-label="View RespectASO on GitHub"
                            class="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-slate-800/80 px-3 py-1 text-slate-300 hover:border-white/20 hover:text-white transition-colors">
