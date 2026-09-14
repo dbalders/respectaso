@@ -81,3 +81,14 @@ class PipelineTest(TestCase):
             report,_,_=run(row,ask,lambda r:{})
         self.assertEqual(ask.call_count,4)
         self.assertFalse(report['validation']['passed'])
+
+
+    def test_owned_app_listing_is_available_to_the_model_and_saved(self):
+        row=CodexRun.objects.create(mode='research',brief='Golf video app',promoted_app_id='123',country='us')
+        ask=mock.Mock(return_value={**REPORT,'keywords':[]})
+        with mock.patch('aso.research_pipeline.discovery.discover',return_value={'status':'unconfigured','warnings':[],'candidates':[],'snapshots':[]}), mock.patch('aso.research_pipeline.ITunesSearchService') as service:
+            service.return_value.lookup_by_id.return_value={'trackName':'Our App'}
+            service.return_value.lookup_full_description.return_value={'description':'Verified app features'}
+            _,_,data=run(row,ask,lambda r:{})
+        self.assertIn('Verified app features',ask.call_args.args[0])
+        self.assertEqual(data['listings']['your_app']['trackName'],'Our App')

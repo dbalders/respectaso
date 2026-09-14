@@ -50,8 +50,11 @@ class CodexWorkflowTest(TestCase):
             self.assertEqual(r.status_code,202)
             pk=r.json()['id']
             self.assertEqual(self.client.post(f'/codex/runs/{pk}/retry/').status_code,409)
-            CodexRun.objects.filter(pk=pk).update(status='failed')
+            CodexRun.objects.filter(pk=pk).update(status='failed',report={'stale':True},evidence=[{'stale':True}])
             self.assertEqual(self.client.post(f'/codex/runs/{pk}/retry/').status_code,202)
+            fresh=CodexRun.objects.get(pk=pk)
+            self.assertEqual(fresh.report,{})
+            self.assertEqual(fresh.evidence,[])
 
     def test_report_persists_and_failures_are_visible(self):
         row=CodexRun.objects.create(mode='metadata',brief='Golf video app',status='running')

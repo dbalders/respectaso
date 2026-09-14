@@ -1,6 +1,7 @@
 """CSRF-protected local UI for the independent Codex workflow."""
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404, render
+from django.views.decorators.cache import never_cache
 from django.views.decorators.http import require_GET, require_POST, require_http_methods
 from . import codex_ai, run_queue
 from .forms import COUNTRY_CHOICES
@@ -14,14 +15,21 @@ def payload(row):
             "promoted_app_id": row.promoted_app_id, "competitor_app_id": row.competitor_app_id,
             "discovery": row.discovery_data, "country": row.country, "status": row.status, "progress": row.progress_message,
             "error": row.error_message, "report": row.report, "evidence": row.evidence,
-            "created_at": row.created_at.isoformat()}
+            "created_at": row.created_at.isoformat(),
+            "started_at": row.started_at.isoformat() if row.started_at else None,
+            "finished_at": row.finished_at.isoformat() if row.finished_at else None}
 
 
+@never_cache
 @require_GET
 def workspace(request):
-    return render(request, "aso/codex.html", {"countries": COUNTRY_CHOICES})
+    from pathlib import Path
+    from django.conf import settings
+    revision = int((Path(settings.BASE_DIR) / "static/js/codex-workspace.js").stat().st_mtime)
+    return render(request, "aso/codex.html", {"countries": COUNTRY_CHOICES, "asset_revision": revision})
 
 
+@never_cache
 @require_GET
 def status(request):
     return JsonResponse({**codex_ai.connection_status(), "apple": discovery.connection_status()})
@@ -58,7 +66,7 @@ def detail(request, pk):
 @require_POST
 def retry(request, pk):
     row = get_object_or_404(CodexRun, pk=pk)
-    if not CodexRun.objects.filter(pk=pk, status="failed").update(status="queued", error_message="", progress_message="Queued", queue_rank=None):
+    if not CodexRun.objects.filter(pk=pk, status="failed").update(status="queued", error_message="", progress_message="Queued", queue_rank=None, started_at=None, finished_at=None, report={}, evidence=[], discovery_data={}):
         return JsonResponse({"error": "Only failed runs can be retried."}, status=409)
     run_queue.kick()
     row.refresh_from_db()

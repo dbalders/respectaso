@@ -135,27 +135,13 @@ class VersionCheckViewTest(TestCase):
         self.addCleanup(patcher_attempt.stop)
 
     @override_settings(VERSION="2.0.0")
-    def test_every_page_load_gets_the_cached_answer(self):
-        url = reverse("aso:version_check")
-        with patch("aso.update_check.urllib.request.urlopen", return_value=_github_response("v2.1.0")) as urlopen:
-            bodies = [self.client.get(url).json() for _ in range(5)]
-        self.assertEqual(urlopen.call_count, 1)
-        for body in bodies:
-            self.assertTrue(body["update_available"])
-            self.assertEqual(body["latest"], "2.1.0")
-            self.assertEqual(body["current"], "2.0.0")
-            self.assertEqual(body["download_url"], "https://example.com/RespectASO.dmg")
-            self.assertIn("release_url", body)
-            self.assertIn("release_notes", body)
-            self.assertIn("is_native", body)
-
-    @override_settings(VERSION="2.0.0")
-    def test_failure_is_reported_to_the_page_as_an_error(self):
-        offline = urllib.error.URLError("no network")
-        with patch("aso.update_check.urllib.request.urlopen", side_effect=offline):
+    def test_fork_never_prompts_for_an_upstream_binary(self):
+        with patch("aso.update_check.urllib.request.urlopen") as urlopen:
             body = self.client.get(reverse("aso:version_check")).json()
-        self.assertEqual(body["error"], "URLError")
+        urlopen.assert_not_called()
         self.assertFalse(body["update_available"])
+        self.assertEqual(body["current"], "2.0.0")
+        self.assertEqual(body["fork_url"], "https://github.com/dbalders/respectaso")
 
 
 class DownloadDmgViewTest(TestCase):

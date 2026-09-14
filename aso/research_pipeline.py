@@ -56,6 +56,15 @@ def run(row, ask, compact):
     warnings = list(apple['warnings'])
     context = {'mode':row.mode,'brief':row.brief,'country':row.country,
                'apple_candidates':apple['candidates'], 'source_warnings':warnings}
+    if row.promoted_app_id:
+        progress('Fetching your app listing')
+        service = ITunesSearchService()
+        profile = service.lookup_by_id(int(row.promoted_app_id), country=row.country)
+        if profile is not None:
+            context['your_app'] = profile
+            context['your_app_details'] = service.lookup_full_description(int(row.promoted_app_id), country=row.country)
+        else:
+            warnings.append('Your app listing could not be fetched; recommendations use your brief only.')
     if row.competitor_app_id:
         progress('Fetching the competitor listing')
         service = ITunesSearchService()
@@ -65,6 +74,7 @@ def run(row, ask, compact):
         else:
             context['competitor'] = profile
             context['competitor_details'] = service.lookup_full_description(int(row.competitor_app_id),country=row.country)
+    apple['listings'] = {key: context[key] for key in ('your_app', 'your_app_details', 'competitor', 'competitor_details') if key in context}
     progress('Codex is selecting relevant candidates', discovery_data=apple)
     import json
     rules = ("You are an ASO analyst. Use only supplied facts; no tools, file access, browsing or commands. "

@@ -45,6 +45,10 @@ Connect and verify Apple Ads through **Settings → Popularity**. This implement
 
 Official contracts: [keyword suggestions](https://developer.apple.com/documentation/apple-ads-platform-api/query-keyword-suggestions), [phrase suggestions](https://developer.apple.com/documentation/apple-ads-platform-api/query-phrase-suggestions).
 
+## Usability
+
+Draft inputs are saved in this browser on this Mac. Clear draft removes those saved inputs. Use **Edit these inputs** to reuse a previous analysis, and individual copy buttons for title, subtitle and keywords. Metadata and competitor modes share the measured research pipeline; they do not claim to predict App Store rankings.
+
 ## Validation
 
 ```sh

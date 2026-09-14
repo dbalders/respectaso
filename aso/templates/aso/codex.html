@@ -3,7 +3,7 @@
 {% block title %}Codex AI · RespectASO{% endblock %}
 {% block extra_head %}
 <style>
-.cx{max-width:1100px;margin:auto}.cx h1{font-size:28px;font-weight:650}.cx p{color:#a7b5c9;line-height:1.6}.cx-grid{display:grid;grid-template-columns:340px 1fr;gap:24px;margin-top:24px}.cx-panel{border:1px solid #334155;border-radius:16px;padding:22px;background:#182337}.cx label{display:block;margin:16px 0 6px;color:#cbd5e1;font-weight:500}.cx input,.cx select,.cx textarea{width:100%;background:#0f172a;border:1px solid #475569;border-radius:8px;padding:10px;color:white}.cx textarea{min-height:180px;resize:vertical}.cx button{padding:10px 16px;background:#6d28d9;border-radius:8px;margin-top:16px;font-weight:600}.cx button:disabled{opacity:.5}.cx button.secondary{background:#334155}.cx-report{white-space:pre-wrap;line-height:1.7;overflow-wrap:anywhere}.cx small{color:#94a3b8}.cx-error{color:#fca5a5!important}.cx-history button{display:block;text-align:left;width:100%;background:#243249;font-weight:400}.cx h2{font-size:20px;font-weight:600;margin-bottom:12px}.cx h3{font-weight:600;margin-top:20px;margin-bottom:8px}.cx ul{list-style:disc;padding-left:20px}.cx-status{margin:12px 0;color:#6ee7b7}.cx code{white-space:pre-wrap;overflow-wrap:anywhere}@media(max-width:800px){.cx-grid{grid-template-columns:1fr}}
+.cx{max-width:1100px;margin:auto}.cx h1{font-size:28px;font-weight:650}.cx p{color:#a7b5c9;line-height:1.6}.cx-grid{display:grid;grid-template-columns:340px 1fr;gap:24px;margin-top:24px}.cx-panel{border:1px solid #334155;border-radius:16px;padding:22px;background:#182337}.cx label{display:block;margin:16px 0 6px;color:#cbd5e1;font-weight:500}.cx input,.cx select,.cx textarea{width:100%;background:#0f172a;border:1px solid #475569;border-radius:8px;padding:10px;color:white}.cx textarea{min-height:180px;resize:vertical}.cx button{padding:10px 16px;background:#6d28d9;border-radius:8px;margin-top:16px;font-weight:600}.cx button:disabled{opacity:.5}.cx button.secondary{background:#334155}.cx-panel{min-width:0}.cx :focus-visible{outline:3px solid #a78bfa;outline-offset:3px}.cx-table{overflow-x:auto}.cx-report{white-space:pre-wrap;line-height:1.7;overflow-wrap:anywhere}.cx small{color:#94a3b8}.cx-error{color:#fca5a5!important}.cx-history button{display:block;text-align:left;width:100%;background:#243249;font-weight:400}.cx h2{font-size:20px;font-weight:600;margin-bottom:12px}.cx h3{font-weight:600;margin-top:20px;margin-bottom:8px}.cx ul{list-style:disc;padding-left:20px}.cx-status{margin:12px 0;color:#6ee7b7}.cx code{white-space:pre-wrap;overflow-wrap:anywhere}@media(max-width:800px){.cx-grid{grid-template-columns:1fr}}
 </style>
 {% endblock %}
 {% block content %}
@@ -19,22 +19,26 @@
 <label for="cx-mode">What would you like to do?</label><select id="cx-mode" name="mode"><option value="research">Discover keywords</option><option value="competitor">Analyze competitors</option><option value="metadata">Review metadata</option></select>
 <label for="cx-brief">About your app and your question</label><textarea id="cx-brief" name="brief" minlength="5" maxlength="12000" required placeholder="Describe your app, its audience and features. For a metadata review, include your current title, subtitle and keyword field."></textarea>
 <label for="cx-seed">Seed keyword (optional)</label><input id="cx-seed" name="seed" maxlength="200" placeholder="golf swing"><small>Fetches current competitors and scores. Up to 10 candidates are scored before Codex revises its recommendations.</small>
+<details id="cx-app-options" style="margin-top:16px"><summary>App and competitor listings (optional)</summary>
 <label for="cx-app">Your app’s App Store URL or ID (optional)</label><input id="cx-app" name="promoted_app_id" maxlength="300" placeholder="https://apps.apple.com/…/id123456789"><small>Scopes Apple keyword suggestions to your app. Your Apple Ads account must have access.</small>
 <label for="cx-competitor">Competitor App Store URL or ID (optional)</label><input id="cx-competitor" name="competitor_app_id" maxlength="300" placeholder="https://apps.apple.com/…/id123456789"><small>Fetches the listing for competitor analysis. This is separate from your promoted app.</small>
+</details>
 <label for="cx-country">App Store country</label><select id="cx-country" name="country">{% for value,label in countries %}<option value="{{ value }}">{{ label }}</option>{% endfor %}</select>
 <button id="cx-submit" type="submit" disabled>Run with Codex</button>
+<button id="cx-clear" type="button" class="secondary">Clear draft</button>
 <p id="cx-error" class="cx-error" role="alert"></p>
 </form>
 <h3>Recent analyses</h3><div id="cx-history" class="cx-history"></div>
 </section>
 <section class="cx-panel" aria-live="polite">
-<h2 id="cx-heading">Your analysis</h2><p id="cx-progress">Discover candidates → score keywords → refine recommendations → validate metadata.</p>
+<h2 tabindex="-1" id="cx-heading">Your analysis</h2><p id="cx-progress">Discover candidates → score keywords → refine recommendations → validate metadata.</p>
 <div id="cx-result"></div>
+<button id="cx-reuse" class="secondary" hidden>Edit these inputs</button>
 <button id="cx-copy" class="secondary" hidden>Copy report</button>
 <button id="cx-research" class="secondary" hidden>Research suggested keywords</button>
 <button id="cx-retry" class="secondary" hidden>Retry analysis</button>
 <details id="cx-evidence" style="margin-top:20px" hidden><summary>Research used in this analysis</summary><pre class="cx-report" id="cx-evidence-text"></pre></details>
 </section>
 </div></div>
-<script src="{% static 'js/codex-workspace.js' %}"></script>
+<script src="{% static 'js/codex-workspace.js' %}?v={{ asset_revision }}"></script>
 {% endblock %}

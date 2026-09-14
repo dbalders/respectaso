@@ -23,10 +23,9 @@ class PromoBannerTest(TestCase):
         self.addCleanup(self._override.disable)
         self.addCleanup(self._tmp.cleanup)
 
-    def test_banner_shows_without_a_license(self):
+    def test_fork_has_no_paid_promo_banner(self):
         response = self.client.get(reverse("aso:methodology"))
-        self.assertContains(response, 'id="respectlytics-banner"')
-        self.assertContains(response, reverse("aso:respectlytics_banner_dismiss"))
+        self.assertNotContains(response, 'id="respectlytics-banner"')
 
     def test_dismiss_endpoint_hides_it_for_good(self):
         response = self.client.post(reverse("aso:respectlytics_banner_dismiss"))

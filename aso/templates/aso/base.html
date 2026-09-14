@@ -12,6 +12,11 @@
     <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
     <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
     <link rel="manifest" href="{% static 'images/site.webmanifest' %}">
+    <style>
+    .respectaso-nav{display:flex;align-items:center;justify-content:space-between;min-height:48px;gap:20px;flex-wrap:wrap;padding:8px 0}
+    .respectaso-nav>a{flex-shrink:0}.respectaso-nav-links{display:flex;align-items:center;gap:20px;overflow-x:auto;max-width:100%;padding:4px 0}.respectaso-nav-links>a{white-space:nowrap;flex-shrink:0}
+    @media(max-width:900px){.respectaso-nav-links{width:100%;gap:18px}.respectaso-nav{gap:4px}}
+    </style>
     {% block extra_head %}{% endblock %}
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex flex-col">
@@ -58,12 +63,12 @@
     <!-- Navigation -->
     <nav class="bg-slate-800/80 border-b border-white/10 backdrop-blur-sm sticky top-0 z-40">
         <div class="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-12">
+            <div class="respectaso-nav">
                 <a href="{% url 'aso:dashboard' %}" class="flex items-center gap-2 text-white hover:text-purple-300 transition-colors">
                     <img src="{% static 'images/respectaso-logo.png' %}" alt="RespectASO" class="h-8 w-8 rounded">
                     <span class="font-bold text-base">RespectASO</span>
                 </a>
-                <div class="flex items-center gap-6">
+                <div class="respectaso-nav-links">
                     <a href="{% url 'aso:dashboard' %}"
                        class="text-sm {% if request.resolver_match.url_name == 'dashboard' %}text-purple-400 font-medium{% else %}text-slate-300 hover:text-white{% endif %} transition-colors">
                         Dashboard
